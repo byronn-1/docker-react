@@ -1,0 +1,44 @@
+$ -v/app/node_modules -v$(pwd):/app <image_id>
+
+remeber that this will be initially about making a docker container that is to be used in deployment
+
+inside of the project directory we make a docker file that is going to run the project in development(we make a second production one later)
+
+
+just remember that if you try to run docker in this project dir docker will get confused so to specify the file to run you add -f <fileName>
+
+this would amount to....
+$ docker build -f Dockerfile.dev .
+
+
+also dont forget this could take a while because we're copying the dev dependencies (node_modules) instead of using the ones in our image.
+  So here we delete the node_modules folder and this makes the image use 
+
+To get the docker container to update dynamically we need to use volumes. The volume is essentially goin to set up a refferance that points back to the file in the local machine. A docker volume can be though of in a very simular fasion as a port mapping. In the visits project we set up a port mapping from a port inside a container to a port outside a container. With a docker container we are mapping a FOLDER inside the container to a FOLDER outside a container.
+
+IN GIT BASH
+winpty docker run -it -p 3000:3000 -v /app/node_modules -v "/$(PWD)":/app CONTAINER_ID
+
+IN POWERSHELL
+docker run -it -p 3000:3000 -v /app/node_modules -v ${pwd}:/app CONTAINER_ID
+
+from Q+A's
+  docker run -it -p 3000:3000 -v /app/node_modules -v $'pwd':/app  b5e6f9b53d3f
+
+Windows Defender, Firewalls and Anti-Virus
+
+Any of these services could possibly conflict with the volume mounting. When in doubt, disable each service one by one to see if the volumes begin working correctly.
+
+docker run -it -p 3000:3000 CONTAINER_ID
+
+Differences between -v and --mount behavior
+Because the -v and --volume flags have been a part of Docker for a long time, their behavior cannot be changed. This means that there is one behavior that is different between -v and --mount.
+
+If you use -v or --volume to bind-mount a file or directory that does not yet exist on the Docker host, -v creates the endpoint for you. It is always created as a directory.
+
+If you use --mount to bind-mount a file or directory that does not yet exist on the Docker host, Docker does not automatically create it for you, but generates an error.
+
+docker run -it -p 3000:3000 -v /app/node_modules -v $'pwd
+':/app  848f5e0b3ac9
+
+docker-compose down && docker-compose up --build
